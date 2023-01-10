@@ -19,6 +19,7 @@ public:
     string filePath;
     const char *metric;
     vector<vector<float>> content;
+    vector<vector<float>> contentTest;
     vector<string> labels;
     vector<pair<string, int>> distanceData;
 
@@ -73,6 +74,11 @@ public:
     vector<vector<float>> saveTestData(string fileTest);
 
     void saveDataTrain(string fileTrain);
+    void saveData(std:: string filePath);
+
+    void saveTestPath(string fileTest);
+
+    void saveDataPath(string filePath);
 };
 
 

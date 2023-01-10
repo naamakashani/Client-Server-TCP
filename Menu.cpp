@@ -18,13 +18,14 @@
 Menu::Menu() {
     CLI *c = new CLI();
     DefaultIO *dio = new StandardIO();
-    std::array<Command *, 5> commands;
-    m_commands=commands;
-    m_IO=dio;
-    commands[0] = new chooseOne(c, "1", dio);
-    commands[1] = new chooseTwo(c, "2", dio);
-    commands[2] = new chooseThree(c, "3", dio);
-    commands[3] = new chooseFour(c, "4", dio);
-    commands[4] = new chooseFive(c, "5", dio);
+    std::array<Command *, 5> commands{
+            new chooseOne(c, "1", dio),
+            new chooseTwo(c, "2", dio),
+            new chooseThree(c, "3", dio),
+            new chooseFour(c, "4", dio),
+            new chooseFive(c, "5", dio)
+    };
+    m_commands = commands;
+    m_IO = dio;
 }
 

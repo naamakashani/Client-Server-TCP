@@ -30,7 +30,7 @@ bool chooseTwo::validMetric(std::string dis) {
 }
 
 void chooseTwo::execute() {
-    std::string sendString = "The current parameters are: K = " + std::to_string(m_data->m_k ) + "distance metric =" + m_data->m_metric;
+    std::string sendString = "The current parameters are: K = " + std::to_string(m_data->m_k ) + " distance metric = " + m_data->m_metric;
     m_dio->write(sendString);
     std::string answer = m_dio->read();
     if (!answer.empty()) {

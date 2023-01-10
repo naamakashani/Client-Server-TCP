@@ -15,8 +15,6 @@ bool chooseThree::sortbysec(const pair<string, int> &a,
 }
 
 string chooseThree::findPredict(KNN knn, vector<float> vec) {
-    std::cout << m_data->m_fileTrain;
-    knn.saveDataTrain(m_data->m_fileTrain);
     knn.saveDistance(vec);
     sort(knn.distanceData.begin(), knn.distanceData.end(), sortbysec);
     string predictClass = knn.predict(knn.distanceData);
@@ -29,20 +27,20 @@ void chooseThree::execute() {
     vector<string> labels;
     std::string str;
     ///convert string to const char *
-    std:: string dis=m_data->m_metric;
+    std::string dis = m_data->m_metric;
     const char *met = dis.c_str();
-    KNN knn=KNN(m_data->m_k,m_data->m_fileTrain,met);
+    KNN knn = KNN(m_data->m_k, m_data->m_fileTrain, met);
+    knn.saveDataPath(m_data->m_fileTrain);
     if (!knn.content.empty()) {
-        vector<vector<float>> vectorTest = knn.saveTestData(m_data->m_fileTest);
-        if (!vectorTest.empty()) {
-            for (const auto &innerVector: vectorTest) {
+        knn.saveTestPath(m_data->m_fileTest);
+        if (!knn.contentTest.empty()) {
+            for (const auto &innerVector: knn.contentTest) {
                 str = findPredict(knn, innerVector);
                 labels.push_back(str);
 
             }
             m_dio->write("data classifying complete");
-            m_data->m_labels=labels;
-
+            m_data->m_labels = labels;
 
 
         } else {

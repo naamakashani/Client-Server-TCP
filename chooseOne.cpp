@@ -9,8 +9,6 @@
 
 #include "chooseOne.h"
 #include <iostream>
-#include <unistd.h>
-#include <fstream>
 chooseOne:: chooseOne(CLI* data, std::string description, DefaultIO* dio) : Command(data,description , dio){
 
 }
@@ -25,5 +23,6 @@ void chooseOne::execute() {
     fileTest = m_dio->read();
     m_data->m_fileTest=fileTest;
     m_dio->write("Upload complete.");
+
 
 }
