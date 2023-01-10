@@ -16,4 +16,5 @@ public:
     std::array<Command *, 5> m_commands;
     DefaultIO* m_IO;
     CLI();
+    void start();
 };
