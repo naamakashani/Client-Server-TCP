@@ -9,7 +9,7 @@
 
 #include "chooseOne.h"
 #include <iostream>
-chooseOne:: chooseOne(CLI* data, std::string description, DefaultIO* dio) : Command(data,description , dio){
+chooseOne:: chooseOne(Data* data, std::string description, DefaultIO* dio) : Command(data, description , dio){
 
 }
 void chooseOne::execute() {

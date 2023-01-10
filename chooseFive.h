@@ -11,7 +11,7 @@ class chooseFive : public Command{
     void execute();
 
 public:
-    chooseFive(CLI *data, std::string description, DefaultIO* dio);
+    chooseFive(Data *data, std::string description, DefaultIO* dio);
 };
 
 

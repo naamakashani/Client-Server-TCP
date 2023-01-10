@@ -12,7 +12,7 @@
 
 class chooseOne : public Command {
 public:
-    chooseOne(CLI *data, std::string description, DefaultIO *dio);
+    chooseOne(Data *data, std::string description, DefaultIO *dio);
 
     void execute();
 };

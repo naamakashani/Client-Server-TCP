@@ -14,7 +14,7 @@
 
 class chooseTwo : public Command{
 public:
-    chooseTwo(CLI* data, std::string description, DefaultIO* dio);
+    chooseTwo(Data* data, std::string description, DefaultIO* dio);
     void execute();
 
     bool validMetric(std::string dis);

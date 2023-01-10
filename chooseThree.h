@@ -13,7 +13,7 @@
 class chooseThree : public Command {
 public :
 
-    chooseThree(CLI *data, std::string description, DefaultIO *dio);
+    chooseThree(Data *data, std::string description, DefaultIO *dio);
 
     void execute();
 

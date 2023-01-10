@@ -1,8 +1,8 @@
 #include <iostream>
-#include "Menu.h"
+#include "CLI.h"
 
 int main() {
-    Menu *menu = new Menu();
+    CLI *menu = new CLI();
     std::string stringMenu = "Welcome to KNN Classifier Server. Please choose an option:\n1. upload an unclassified csv data file\n2. algorithm setting\n3. classify data\n4. display results\n5. download results\n8.exit";
     int flag = 1;
     while (flag) {

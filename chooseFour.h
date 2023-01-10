@@ -10,7 +10,7 @@
 
 class chooseFour : public Command{
 public:
-    chooseFour(CLI *data, std::string description, DefaultIO* dio);
+    chooseFour(Data *data, std::string description, DefaultIO* dio);
     void execute();
 };
 

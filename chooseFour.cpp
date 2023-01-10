@@ -4,7 +4,7 @@
 
 #include "chooseFour.h"
 
-chooseFour::chooseFour(CLI *data, std::string description, DefaultIO* dio) : Command(data, description, dio) {
+chooseFour::chooseFour(Data *data, std::string description, DefaultIO* dio) : Command(data, description, dio) {
 
 }
 
@@ -23,7 +23,7 @@ void chooseFour::execute() {
                 sendString += std::to_string(i + 1) + " " + m_data->m_labels[i] + "\n";
 
             }
-            m_data->m_fileTest=sendString;
+            m_data->m_labelsString=sendString;
             sendString += "Done.";
 
             m_dio->write(sendString);

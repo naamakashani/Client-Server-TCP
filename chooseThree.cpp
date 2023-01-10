@@ -5,7 +5,7 @@
 #include "chooseThree.h"
 
 
-chooseThree::chooseThree(CLI *data, std::string description, DefaultIO *dio) : Command(data, description, dio) {};
+chooseThree::chooseThree(Data *data, std::string description, DefaultIO *dio) : Command(data, description, dio) {};
 
 bool chooseThree::sortbysec(const pair<string, int> &a,
                             const pair<string, int> &b) {

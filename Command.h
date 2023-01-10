@@ -7,17 +7,17 @@
 //
 #include <iostream>
 #include "DefaultIO.h"
-#include "CLI.h"
+#include "Data.h"
 
 #ifndef EX4_COMMAND_H
 #define EX4_COMMAND_H
 
 class Command{
 public:
-    CLI* m_data;
+    Data* m_data;
     std::string m_description;
     DefaultIO* m_dio;
-    Command(CLI* m_data,std::string m_description,DefaultIO* m_dio);
+    Command(Data* m_data, std::string m_description, DefaultIO* m_dio);
     virtual void execute()=0;
 };
 
