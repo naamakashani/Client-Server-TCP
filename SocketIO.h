@@ -9,7 +9,8 @@
 
 class SocketIO : public DefaultIO {
 public:
-    SocketIO();
+    int client_sock;
+    SocketIO(int client_s);
 
     virtual std::string read();
 

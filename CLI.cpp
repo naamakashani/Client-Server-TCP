@@ -2,9 +2,6 @@
 // Created by kashann on 09/01/2023.
 //
 
-//
-// Created by kashann on 08/01/2023.
-//
 
 #include "CLI.h"
 #include "chooseOne.h"
@@ -13,11 +10,14 @@
 #include "chooseFour.h"
 #include "chooseFive.h"
 #include "StandardIO.h"
+#include "SocketIO.h"
 #include <array>
+#include <unistd.h>
 
-CLI::CLI() {
+CLI::CLI(int client_s) {
     Data *c = new Data();
-    DefaultIO *dio = new StandardIO();
+    DefaultIO *dio = new SocketIO(client_s);
+    //DefaultIO *dio = new StandardIO();
     std::array<Command *, 5> commands{
             new chooseOne(c, "1", dio),
             new chooseTwo(c, "2", dio),
@@ -33,6 +33,7 @@ void CLI::start() {
     std::string stringMenu = "Welcome to KNN Classifier Server. Please choose an option:\n1. upload an unclassified csv data file\n2. algorithm setting\n3. classify data\n4. display results\n5. download results\n8.exit";
     int flag = 1;
     while (flag) {
+        sleep(1);
         m_IO->write(stringMenu);
         std::string buffer = m_IO->read();
         int num = stoi(buffer);

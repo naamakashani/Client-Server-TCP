@@ -4,6 +4,7 @@
 
 #include "Server.h"
 #include "knn.h"
+#include "CLI.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -13,12 +14,22 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <thread>
+#include <pthread.h>
 
+const int BACKLOG = 5;
+int client_sock;
+
+void *threadFunction(void *threadid) {
+    CLI cli = CLI(client_sock);
+    cli.start();
+    pthread_exit(NULL);
+}
 
 int main(int argc, char **argv) {
-
-    string path = (argv[1]);
-    const int port = stoi(argv[2]);
+    pthread_t threads[20];
+    //Server server;
+    const int port = stoi(argv[1]);
     // Create a socket
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket < 0) {
@@ -37,61 +48,33 @@ int main(int argc, char **argv) {
     if (bind_result < 0) {
         std::perror("Error binding socket");
     }
+    std::cout << "create socket" << endl;
 
-    // Start listening for incoming connections
-    int listen_result = listen(server_socket, BACKLOG);
-    if (listen_result < 0) {
-        std::perror("Error listening socket");
-    }
-//server is waiting to clients
-    while (true) {
+    for (long t = 0; t < 20; t++) {
+
+        // Start listening for incoming connections
+        int listen_result = listen(server_socket, BACKLOG);
+        if (listen_result < 0) {
+            std::perror("Error listening socket");
+        }
+
         struct sockaddr_in client_addr;
         unsigned int addr_len = sizeof(client_addr);
-        int client_sock = accept(server_socket, (struct sockaddr *) &client_addr, &addr_len);
+        client_sock = accept(server_socket, (struct sockaddr *) &client_addr, &addr_len);
         if (client_sock < 0) {
             perror("error accepting client");
         }
+        std::cout << "a client has connect to server" << endl;
         ///a client has connect to server
-        while (true) {
-            string str = "";
-            char buffer[2056];
-            int expected_data_len = sizeof(buffer);
-            int read_bytes = recv(client_sock, buffer, expected_data_len, 0);
-            if (read_bytes == 0) {
-                break;
+        pthread_create(&threads[t], NULL, threadFunction, (void *)t);
+        /* thread th1([]() {
+             CLI cli = CLI();
+             cli.start();
+         });*/
 
-            } else if (read_bytes < 0) {
-                std::cerr << "Error reading data from client" << std::endl;
-            } else {
-                //the client sent to the server -1 so the server close the connection
-                if (buffer == "-1") {
-                    close(client_sock);
-                    break;
-                }
-                std::vector<float> vectorInput;
-                std::string dis;
-                int k;
-                ///convert string to const char *
-                const char *met = dis.c_str();
-                ///checks the validation of input
-                if (readInput(buffer, vectorInput, dis, k)) {
-                    KNN knn = KNN(k, path, met);
-                    str = findPredict(knn, vectorInput);
-                } else {
-                    str = "invalid input";
-                }
-                ///send to client the input
-                char classPredict[str.length() + 1];
-                for (int x = 0; x < sizeof(str); x++) {
-                    classPredict[x] = str[x];
-                }
-                int sent_bytes = send(client_sock, classPredict, str.length(), 0);
-                if (sent_bytes < 0) {
-                    perror("error sending to client");
-                }
-            }
-        }
     }
     close(server_socket);
+    pthread_exit(NULL);
+
 
 }
