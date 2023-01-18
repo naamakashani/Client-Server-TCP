@@ -13,11 +13,13 @@
 #include "SocketIO.h"
 #include <array>
 #include <unistd.h>
+#include <thread>
 
 CLI::CLI(int client_s) {
     Data *c = new Data();
+    m_client_s = client_s;
     DefaultIO *dio = new SocketIO(client_s);
-    //DefaultIO *dio = new StandardIO();
+   // DefaultIO *dio = new StandardIO();
     std::array<Command *, 5> commands{
             new chooseOne(c, "1", dio),
             new chooseTwo(c, "2", dio),
@@ -31,11 +33,12 @@ CLI::CLI(int client_s) {
 
 void CLI::start() {
     std::string stringMenu = "Welcome to KNN Classifier Server. Please choose an option:\n1. upload an unclassified csv data file\n2. algorithm setting\n3. classify data\n4. display results\n5. download results\n8.exit";
-    int flag = 1;
+    bool flag = 1;
     while (flag) {
         sleep(1);
         m_IO->write(stringMenu);
-        std::string buffer = m_IO->read();
+        std::string buffer ="";
+        buffer = m_IO->read();
         int num = stoi(buffer);
         switch (num) {
             case 1:
@@ -54,8 +57,8 @@ void CLI::start() {
                 m_commands[4]->execute();
                 break;
             case 8:
+                m_IO->write("0");
                 flag = 0;
-                break;
             default:
                 break;
         }

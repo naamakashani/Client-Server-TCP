@@ -14,7 +14,9 @@
 #include <unistd.h>
 #include <vector>
 #include <pthread.h>
+
 int sock;
+int flag;
 
 /**
  * check validation of line of data.
@@ -100,14 +102,20 @@ bool Client::readInput(std::string &input) {
 
 void *threadFunctionRecive(void *threadid) {
     Client client;
-    while (true) {
+    while (flag) {
         char buffer[4096];
         int expected_data_len = sizeof(buffer);
         int read_bytes = recv(sock, buffer, expected_data_len, 0);
-        if (read_bytes < 0) {
-            perror("connection closed");
+        if (strcmp(buffer, "0") == 0) {
+            flag = 0;
         } else {
-            std::cout << buffer << std::endl;
+            if (read_bytes <= 0) {
+                perror("connection closed");
+                exit(0);
+                break;
+            } else {
+                std::cout << buffer << std::endl;
+            }
         }
     }
     pthread_exit(NULL);
@@ -115,19 +123,25 @@ void *threadFunctionRecive(void *threadid) {
 
 void *threadFunctionsend(void *threadid) {
     Client client;
-    std::string userInput ;
-    while (true) {
+    std::string userInput = "";
+    while (userInput != "8") {
         client.readInput(userInput);
+        if (userInput.empty()) {
+            userInput = "enter";
+        }
         int send_bytes = send(sock, userInput.data(), userInput.length(), 0);
         if (send_bytes < 0) {
             perror("error in sending");
+            break;
         }
     }
+    flag = 0;
     pthread_exit(NULL);
 }
 
 
 int main(int argc, char **argv) {
+    flag = 1;
     Client client;
     const char *ip_address = (argv[1]);
     int port_no = std::stoi(argv[2]);
@@ -149,8 +163,8 @@ int main(int argc, char **argv) {
     pthread_t threadSend;
     long t1 = 0;
     long t2 = 1;
-    pthread_create(&threadRecive, NULL, threadFunctionRecive, (void *)t1);
-    pthread_create(&threadSend, NULL, threadFunctionsend, (void *)t2);
+    pthread_create(&threadRecive, NULL, threadFunctionRecive, (void *) t1);
+    pthread_create(&threadSend, NULL, threadFunctionsend, (void *) t2);
     pthread_join(threadRecive, NULL);
     pthread_join(threadSend, NULL);
     close(sock);

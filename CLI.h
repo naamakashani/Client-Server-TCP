@@ -15,6 +15,7 @@ class CLI {
 public:
     std::array<Command *, 5> m_commands;
     DefaultIO* m_IO;
+    int m_client_s;
     CLI(int client_s);
     void start();
 };

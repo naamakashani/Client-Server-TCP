@@ -109,7 +109,7 @@ void KNN::setMetric(const char *newMetric) {
 
 Distance *KNN::findMetric() {
     Distance *distanceMetric;
-    const char *str = "EUC";
+    const char *str = "AUC";
     if (strcmp(metric, str) == 0) {
         EuclideanDistance *euclidean = new EuclideanDistance();
         return euclidean;
