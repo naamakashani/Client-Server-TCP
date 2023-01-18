@@ -52,7 +52,6 @@ void KNN::saveDataPath(std::string filePath) {
     std::cout << fname << endl;
     ifstream file(fname);
     if (file.is_open()) {
-        std::cout << "open";
         while (getline(file, line)) {
             row.clear();
 

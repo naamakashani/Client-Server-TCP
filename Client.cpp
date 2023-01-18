@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <vector>
 #include <pthread.h>
+#include <fstream>
+#include <sstream>
 
 int sock;
 int flag;
@@ -84,6 +86,35 @@ bool Client::checkValidation(std::string str) {
     return true;
 }
 
+std::string filePathGiven(std::string filePath){
+    // open the CSV file
+    std::ifstream file("filePath");
+    if (!file.is_open()) {
+        std::cout << filePath <<std::endl;
+        std::cout << "not open" <<std::endl;
+        std::cout << "Error: " << strerror(errno) << std::endl;
+    }
+    std::string fileContent((std::istreambuf_iterator<char>(file)),
+                      std::istreambuf_iterator<char>());
+    std::stringstream ss(fileContent);
+    std::string line;
+    std::string csvContent;
+
+    // parse the CSV file
+    while (getline(ss, line)) {
+        csvContent += line + '\n';
+        std::cout << line <<std::endl;
+    }
+    return csvContent;
+}
+bool hasEnding (std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
 /***
  *
  * @param vector1
@@ -93,6 +124,10 @@ bool Client::checkValidation(std::string str) {
 bool Client::readInput(std::string &input) {
     try {
         getline(std::cin, input);
+        if (hasEnding(input, ".csv")){
+            std::cout << "csv file " << std::endl << filePathGiven(input);
+            input = filePathGiven(input);
+        }
     }
     catch (...) {
         return false;
