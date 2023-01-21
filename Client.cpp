@@ -88,7 +88,7 @@ bool Client::checkValidation(std::string str) {
 
 std::string filePathGiven(std::string filePath){
     // open the CSV file
-    std::ifstream file("filePath");
+    std::ifstream file(filePath);
     if (!file.is_open()) {
         std::cout << filePath <<std::endl;
         std::cout << "not open" <<std::endl;
