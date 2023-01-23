@@ -37,7 +37,7 @@ void KNN::saveTestPath(string fileTest) {
             row.clear();
             stringstream str(line);
             while (getline(str, word, ',')) {
-                double num = std::stod(word);
+                float num = std::stod(word);
                 row.push_back(num);
             }
             contentTest.push_back(row);
@@ -45,35 +45,55 @@ void KNN::saveTestPath(string fileTest) {
     }
 }
 
+//void KNN::saveDataPath(std::string filePath) {
+//    string fname = filePath;
+//    vector<float> row;
+//    string line, word;
+//    ifstream file(fname);
+//    if (file.is_open()) {
+//        while (getline(file, line)) {
+//            row.clear();
+//            stringstream str(line);
+//            bool read_label = 0;
+//            while (getline(str, word, ',')) {
+//                try {
+//                    double num = std::stod(word);
+//                    row.push_back(num);
+//                }
+//                catch (std::invalid_argument &) {
+//                   if (read_label != 0)
+//                        throw "csv file is invalid, two labels in row";
+//                    labels.push_back(word);
+//                   read_label = 1;
+//                }
+//
+//            }
+//            content.push_back(row);
+//        }
+//    } else
+//        cout << "Could not open the file\n";
+//}
 void KNN::saveDataPath(std::string filePath) {
     string fname = filePath;
     vector<float> row;
     string line, word;
     ifstream file(fname);
     if (file.is_open()) {
-        while (getline(file, line)) {
-            row.clear();
-
-            stringstream str(line);
-            bool read_label = 0;
-            while (getline(str, word, ',')) {
-                try {
-                    double num = std::stod(word);
-                    row.push_back(num);
-                }
-                catch (std::invalid_argument &) {
-                    if (read_label != 0)
-                        throw "csv file is invalid, two labels in a row";
-                    labels.push_back(word);
-                    read_label = 1;
-                }
-
+        stringstream str(line);
+        while (getline(str, word, ',')) {
+            try {
+                float num = std::stod(word);
+                row.push_back(num);
             }
-            content.push_back(row);
+            catch (std::invalid_argument &) {
+                labels.push_back(word);
+            }
         }
-    } else
-        cout << "Could not open the file\n";
+
+        content.push_back(row);
+    }
 }
+
 
 void KNN::saveDataTrain(string fileTrain) {
     vector<float> row;

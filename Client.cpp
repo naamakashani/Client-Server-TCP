@@ -266,6 +266,7 @@ void Client::chooseTwo(std::string userInput) {
         userInput = "enter";
     }
     Client::sendToServer(sock, userInput);
+    receiveServer();
 }
 
 void Client::chooseThree(std::string userInput) {
