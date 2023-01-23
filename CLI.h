@@ -5,7 +5,7 @@
 
 #include <array>
 #include "Command.h"
-
+#include "SocketIO.h"
 #ifndef EX4_MENU_H
 #define EX4_MENU_H
 
@@ -13,9 +13,10 @@
 
 class CLI {
 public:
+//    CLI();
+
     std::array<Command *, 5> m_commands;
     DefaultIO* m_IO;
-    int m_client_s;
-    CLI(int client_s);
+    CLI(int sock);
     void start();
 };

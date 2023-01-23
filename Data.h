@@ -15,7 +15,7 @@
 class Data {
 public:
     int m_k=5;
-    std::string m_metric="EUC";
+    std::string m_metric="AUC";
     std::string m_fileTrain=" ", m_fileTest=" ";
     std::vector<std::string> m_labels={" "};
     std::string m_labelsString = " ";

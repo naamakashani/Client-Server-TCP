@@ -15,7 +15,7 @@ SocketIO::SocketIO(int client_s) : DefaultIO() {
 }
 
 std::string SocketIO::read() {
-    char buffer[2056] = "";
+    char buffer[11000] = "";
     int expected_data_len = sizeof(buffer);
     int read_bytes = recv(client_sock, buffer, expected_data_len, 0);
     if (read_bytes == 0) {

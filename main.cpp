@@ -2,7 +2,7 @@
 #include "CLI.h"
 
 int main() {
-    CLI *cli = new CLI(5);
+    CLI *cli = new CLI();
     cli->start();
 
 

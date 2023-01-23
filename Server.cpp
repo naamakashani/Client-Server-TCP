@@ -75,5 +75,6 @@ int main(int argc, char **argv) {
     }
     close(server_socket);
     pthread_exit(NULL);
+
 }
 

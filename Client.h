@@ -4,12 +4,28 @@
 
 #ifndef EX4AP_CLIENT_H
 #define EX4AP_CLIENT_H
+
 #include <iostream>
 
 class Client {
 public:
     bool checkValidation(std::string str);
-    bool readInput(std::string &input);
+
+    bool readInput(std::string &input, bool &flag);
+
+    void sendToServer(int sock, std::string message);
+
+    void chooseOne(std::string userInput);
+
+    void talkWithServer();
+
+    void chooseTwo(std::string userInput);
+
+    void chooseThree(std::string basicString);
+
+    void chooseFive(std::string basicString);
+
+    std::string writetoFile(std::string fileContent, std::string filePath);
 };
 
 

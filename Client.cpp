@@ -11,11 +11,14 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 #include <vector>
 #include <pthread.h>
 #include <fstream>
 #include <sstream>
+#include <mutex>
+#include <thread>
 
 int sock;
 int flag;
@@ -86,16 +89,16 @@ bool Client::checkValidation(std::string str) {
     return true;
 }
 
-std::string filePathGiven(std::string filePath){
+std::string filePathGiven(std::string filePath) {
     // open the CSV file
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cout << filePath <<std::endl;
-        std::cout << "not open" <<std::endl;
+        std::cout << filePath << std::endl;
+        std::cout << "not open" << std::endl;
         std::cout << "Error: " << strerror(errno) << std::endl;
     }
     std::string fileContent((std::istreambuf_iterator<char>(file)),
-                      std::istreambuf_iterator<char>());
+                            std::istreambuf_iterator<char>());
     std::stringstream ss(fileContent);
     std::string line;
     std::string csvContent;
@@ -103,13 +106,13 @@ std::string filePathGiven(std::string filePath){
     // parse the CSV file
     while (getline(ss, line)) {
         csvContent += line + '\n';
-        std::cout << line <<std::endl;
     }
     return csvContent;
 }
-bool hasEnding (std::string const &fullString, std::string const &ending) {
+
+bool hasEnding(std::string const &fullString, std::string const &ending) {
     if (fullString.length() >= ending.length()) {
-        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
     } else {
         return false;
     }
@@ -121,12 +124,13 @@ bool hasEnding (std::string const &fullString, std::string const &ending) {
  * @return true after put the string into vector
  */
 
-bool Client::readInput(std::string &input) {
+bool Client::readInput(std::string &input, bool &flag) {
     try {
         getline(std::cin, input);
-        if (hasEnding(input, ".csv")){
-            std::cout << "csv file " << std::endl << filePathGiven(input);
-            input = filePathGiven(input);
+        if (hasEnding(input, ".csv")) {
+            flag = 1;
+//            std::cout << "csv file " << std::endl << filePathGiven(input);
+//            input = filePathGiven(input);
         }
     }
     catch (...) {
@@ -135,44 +139,160 @@ bool Client::readInput(std::string &input) {
     return true;
 }
 
-void *threadFunctionRecive(void *threadid) {
-    Client client;
-    while (flag) {
-        char buffer[4096];
-        int expected_data_len = sizeof(buffer);
-        int read_bytes = recv(sock, buffer, expected_data_len, 0);
-        if (strcmp(buffer, "0") == 0) {
-            flag = 0;
-        } else {
-            if (read_bytes <= 0) {
-                perror("connection closed");
-                exit(0);
-                break;
-            } else {
-                std::cout << buffer << std::endl;
-            }
-        }
+
+void receiveServer() {
+    char buffer[4096];
+    int expected_data_len = sizeof(buffer);
+    int read_bytes = recv(sock, buffer, expected_data_len, 0);
+    if (read_bytes <= 0) {
+        perror("connection closed");
+        exit(0);
+
+    } else {
+        std::cout << buffer << std::endl;
     }
-    pthread_exit(NULL);
 }
 
-void *threadFunctionsend(void *threadid) {
-    Client client;
-    std::string userInput = "";
-    while (userInput != "8") {
-        client.readInput(userInput);
-        if (userInput.empty()) {
-            userInput = "enter";
+void Client::sendToServer(int sock, std::string message) {
+    int sent_bytes = send(sock, message.c_str(), message.length() + 1, 0);
+    //Check if an error occurred while sending to the server:
+    if (sent_bytes < 0) {
+        //If an error occurred-print a message and close the client:
+        std::cout << "Error sending to server" << std::endl;
+        close(sock);
+        exit(-1);
+    }
+}
+
+
+void Client::chooseOne(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    receiveServer();
+    std::cin >> userInput;
+    sendToServer(sock, userInput);
+    receiveServer();
+    receiveServer();
+    std::cin >> userInput;
+    sendToServer(sock, userInput);
+    receiveServer();
+    std::cin.tie(0);
+    std::ios::sync_with_stdio(0);
+    return;
+
+
+}
+
+void Client::chooseTwo(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    receiveServer();
+    getline(std::cin, userInput);
+    std::cout << userInput << std::endl;
+    if (userInput.empty()) {
+        userInput = "enter";
+    }
+    Client::sendToServer(sock, userInput);
+}
+
+void Client::chooseThree(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    receiveServer();
+}
+
+void Client::talkWithServer() {
+    std::string userInput;
+    flag = 1;
+    while (flag == 1) {
+        userInput = "";
+//        receiveServer();
+        std::string stringMenu = "Welcome to KNN Classifier Server. Please choose an option:\n1. upload an unclassified csv data file\n2. algorithm setting\n3. classify data\n4. display results\n5. download results\n8.exit";
+        std:: cout << stringMenu << std::endl;
+        getline(std::cin, userInput);
+        if (userInput == "1") {
+            Client::chooseOne(userInput);
         }
-        int send_bytes = send(sock, userInput.data(), userInput.length(), 0);
-        if (send_bytes < 0) {
-            perror("error in sending");
-            break;
+        if (userInput == "2") {
+            Client::chooseTwo(userInput);
+        }
+        if (userInput == "3") {
+            Client::chooseThree(userInput);
+        }
+        if (userInput == "4") {
+            Client::chooseThree(userInput);
+            std::cin.tie(0);
+            std::ios::sync_with_stdio(0);
+
+        }
+        if (userInput == "5") {
+
+            Client::chooseFive(userInput);
+        }
+        if (userInput == "8") {
+            flag = 0;
+        } else {
+            continue;
+        }
+
+    }
+}
+
+std::string Client::writetoFile(std::string fileContent, std::string filePath) {
+    std::fstream file;
+    file.open(filePath, std::ios::in);
+    if (file.good()) {
+        file.close();
+        file.open(filePath, std::ios::out | std::ios::app | std::ios::binary);
+        if (file.good()) {
+            file.clear();
+            file << fileContent;
+            file.close();
+        }
+    } else {
+        file.close();
+        file.open(filePath, std::ios::out | std::ios::binary);
+        if (file.good()) {
+            file.clear();
+            file << fileContent;
+            file.close();
         }
     }
-    flag = 0;
-    pthread_exit(NULL);
 }
+//void Client::chooseFour(std::string userInput) {
+//    Client::sendToServer(sock, userInput);
+//    char buffer2[4096];
+//    int expected_data_len = sizeof(buffer2);
+//    int read_bytes = recv(sock, buffer2, expected_data_len, 0);
+//    if (read_bytes <= 0) {
+//        perror("connection closed");
+//        exit(0);
+//
+//    }
+//    std::cout << "enter path to write the file" << std::endl;
+//    std::string pathInput;
+//    getline(std::cin, pathInput);
+//    std::thread t(&Client::writetoFile, this, buffer2, pathInput);
+//    t.detach();
+//    //write the buffer into the file path
+//
+//}
+void Client::chooseFive(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    char buffer2[4096];
+    int expected_data_len = sizeof(buffer2);
+    int read_bytes = recv(sock, buffer2, expected_data_len, 0);
+    if (read_bytes <= 0) {
+        perror("connection closed");
+        exit(0);
+
+    }
+    std::cout << "enter path to write the file" << std::endl;
+    std::string pathInput;
+    getline(std::cin, pathInput);
+    std::thread t(&Client::writetoFile, this, buffer2, pathInput);
+    t.detach();
+    //write the buffer into the file path
+
+}
+
 
 
 int main(int argc, char **argv) {
@@ -184,6 +304,8 @@ int main(int argc, char **argv) {
     if (sock < 0) {
         perror("error in creating socket");
     }
+    int flag = 1;
+    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
@@ -194,13 +316,6 @@ int main(int argc, char **argv) {
     }
     // client connect to server
     std::cout << "client connect to server" << std::endl;
-    pthread_t threadRecive;
-    pthread_t threadSend;
-    long t1 = 0;
-    long t2 = 1;
-    pthread_create(&threadRecive, NULL, threadFunctionRecive, (void *) t1);
-    pthread_create(&threadSend, NULL, threadFunctionsend, (void *) t2);
-    pthread_join(threadRecive, NULL);
-    pthread_join(threadSend, NULL);
+    client.talkWithServer();
     close(sock);
 }

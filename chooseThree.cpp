@@ -24,11 +24,15 @@ string chooseThree::findPredict(KNN knn, vector<float> vec) {
 
 
 void chooseThree::execute() {
+
     vector<string> labels;
     std::string str;
     ///convert string to const char *
+    std::cout << "2";
     std::string dis = m_data->m_metric;
+    std::cout << "3";
     const char *met = dis.c_str();
+    std::cout << "4";
     KNN knn = KNN(m_data->m_k, m_data->m_fileTrain, met);
     knn.saveDataPath(m_data->m_fileTrain);
     if (!knn.content.empty()) {

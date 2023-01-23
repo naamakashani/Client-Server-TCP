@@ -9,7 +9,7 @@
 #define EX4_CHOOSEONE_H
 
 #include "Command.h"
-
+#include <unistd.h>
 class chooseOne : public Command {
 public:
     chooseOne(Data *data, std::string description, DefaultIO *dio);
