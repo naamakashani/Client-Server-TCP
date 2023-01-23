@@ -217,6 +217,7 @@ void Client::handleCmd1(std::string userInput) {
     receiveServer();
 
 }
+
 void Client::chooseOne(std::string userInput) {
     Client::sendToServer(sock, userInput);
     receiveServer();
@@ -229,7 +230,7 @@ void Client::chooseOne(std::string userInput) {
         trainBuffer << trainStream.rdbuf();
         trainString = trainBuffer.str();
     } else {
-        std::cout << "Error: can't open the file " << strerror(errno) << std::endl;
+        trainString = "invalid";
     }
     trainString += "*EOF";
     sendToServer(sock, trainString);
@@ -244,19 +245,19 @@ void Client::chooseOne(std::string userInput) {
         trainBuffer2 << trainStream2.rdbuf();
         trainString2 = trainBuffer2.str();
     } else {
-        std::cout << "Error: can't open the file " << strerror(errno) << std::endl;
+        trainString2 = "invalid";
+
     }
     trainString2 += "*EOF";
     sendToServer(sock, trainString2);
     receiveServer();
     std::cin.tie(0);
     std::ios::sync_with_stdio(0);
-
     return;
 }
 
 
-    void Client::chooseTwo(std::string userInput) {
+void Client::chooseTwo(std::string userInput) {
     Client::sendToServer(sock, userInput);
     receiveServer();
     getline(std::cin, userInput);
@@ -333,7 +334,7 @@ std::string Client::writetoFile(std::string fileContent, std::string filePath) {
 
 void Client::chooseFour(std::string userInput) {
     std::cout << ReadResult(userInput);
-    std::cout << std:: endl;
+    std::cout << std::endl;
 
 }
 

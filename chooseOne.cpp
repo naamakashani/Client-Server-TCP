@@ -8,7 +8,7 @@
 #include <fstream>
 
 
-chooseOne:: chooseOne(Data* data, std::string description, DefaultIO* dio) : Command(data, description , dio){
+chooseOne::chooseOne(Data *data, std::string description, DefaultIO *dio) : Command(data, description, dio) {
 
 }
 //void chooseOne::execute() {
@@ -80,9 +80,16 @@ void chooseOne::execute() {
     //read the data from the client and write to a new file
     //while the client is sending data we need to read it
     std::string trainFileContent;
-    while (true) {
+    int flag = 1;
+    while (flag == 1) {
         std::string subFile = m_dio->read();
+        //check if subFile contain the string "invalid" if so we need to send the client a message
+        if (subFile.find("invalid") != std::string::npos) {
+            flag = 0;
+            continue;
+        }
         //check if there is * in sub file if so we need to read until the * and then break
+
         if (subFile.find("*") != std::string::npos) {
             //we need to remove the * from the string
             subFile = subFile.substr(0, subFile.find("*"));
@@ -92,17 +99,27 @@ void chooseOne::execute() {
         trainFileContent += subFile;
 
     }
-    std::string trainFile = writeCSV(trainFileContent, true);
-    m_data->m_fileTrain = trainFile;
-    m_dio->write("Upload complete.");
-    sleep(1);
+    if (flag == 1) {
+        std::string trainFile = writeCSV(trainFileContent, true);
+        m_data->m_fileTrain = trainFile;
+        m_dio->write("Upload complete.");
+        sleep(1);
+    } else {
+        m_dio->write("invalid input");
+        sleep(1);
+    }
     m_dio->write("Please upload your local test CSV file.");
     std::string subFile2;
     //read the data from the client and write to a new file
     //while the client is sending data we need to read it
     std::string trainFileContent2;
-    while (true) {
+    int flag2 = 1;
+    while (flag2 == 1) {
         std::string subFile2 = m_dio->read();
+        if (subFile2.find("invalid") != std::string::npos) {
+            flag2 = 0;
+            continue;
+        }
         //check if there is * in sub file if so we need to read until the * and then break
         if (subFile2.find("*") != std::string::npos) {
             //we need to remove the * from the string
@@ -113,13 +130,14 @@ void chooseOne::execute() {
         trainFileContent2 += subFile2;
 
     }
-    std::string testFile = writeCSV(trainFileContent2, false);
-    m_data->m_fileTest = testFile;
-    m_dio->write("Upload complete.");
-    m_data->m_k = k;
-    m_data->m_metric = metric;
-    std::cout << k << metric << std::endl;
-
+    if (flag2 == 1) {
+        std::string testFile = writeCSV(trainFileContent2, false);
+        m_data->m_fileTest = testFile;
+        m_dio->write("Upload complete.");
+    } else {
+        m_dio->write("invalid input");
+        sleep(1);
+    }
 
 
 }
