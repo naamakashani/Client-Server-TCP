@@ -25,6 +25,10 @@ public:
 
     void chooseFive(std::string basicString);
 
+    void chooseFour(std::string userInput);
+
+    std::string ReadResult(std::string userInput);
+
     std::string writetoFile(std::string fileContent, std::string filePath);
 };
 

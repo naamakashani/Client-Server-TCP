@@ -25,6 +25,7 @@ void chooseFour::execute() {
             }
             m_data->m_labelsString=sendString;
             sendString += "Done.";
+            sendString += "*EOF";
 
             m_dio->write(sendString);
         }

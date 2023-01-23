@@ -205,7 +205,7 @@ void Client::talkWithServer() {
         userInput = "";
 //        receiveServer();
         std::string stringMenu = "Welcome to KNN Classifier Server. Please choose an option:\n1. upload an unclassified csv data file\n2. algorithm setting\n3. classify data\n4. display results\n5. download results\n8.exit";
-        std:: cout << stringMenu << std::endl;
+        std::cout << stringMenu << std::endl;
         getline(std::cin, userInput);
         if (userInput == "1") {
             Client::chooseOne(userInput);
@@ -217,7 +217,7 @@ void Client::talkWithServer() {
             Client::chooseThree(userInput);
         }
         if (userInput == "4") {
-            Client::chooseThree(userInput);
+            Client::chooseFour(userInput);
             std::cin.tie(0);
             std::ios::sync_with_stdio(0);
 
@@ -256,43 +256,49 @@ std::string Client::writetoFile(std::string fileContent, std::string filePath) {
         }
     }
 }
-//void Client::chooseFour(std::string userInput) {
-//    Client::sendToServer(sock, userInput);
-//    char buffer2[4096];
-//    int expected_data_len = sizeof(buffer2);
-//    int read_bytes = recv(sock, buffer2, expected_data_len, 0);
-//    if (read_bytes <= 0) {
-//        perror("connection closed");
-//        exit(0);
-//
-//    }
-//    std::cout << "enter path to write the file" << std::endl;
-//    std::string pathInput;
-//    getline(std::cin, pathInput);
-//    std::thread t(&Client::writetoFile, this, buffer2, pathInput);
-//    t.detach();
-//    //write the buffer into the file path
-//
-//}
-void Client::chooseFive(std::string userInput) {
-    Client::sendToServer(sock, userInput);
-    char buffer2[4096];
-    int expected_data_len = sizeof(buffer2);
-    int read_bytes = recv(sock, buffer2, expected_data_len, 0);
-    if (read_bytes <= 0) {
-        perror("connection closed");
-        exit(0);
 
-    }
-    std::cout << "enter path to write the file" << std::endl;
-    std::string pathInput;
-    getline(std::cin, pathInput);
-    std::thread t(&Client::writetoFile, this, buffer2, pathInput);
-    t.detach();
-    //write the buffer into the file path
+void Client::chooseFour(std::string userInput) {
+    std::cout << ReadResult(userInput);
+    std::cout << std:: endl;
 
 }
 
+std::string Client::ReadResult(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    char buffer2[4096];
+    int expected_data_len = sizeof(buffer2);    //write the buffer into the file path
+    std::string resultContent;
+    while (true) {
+        int read_bytes = recv(sock, buffer2, expected_data_len, 0);
+        if (read_bytes <= 0) {
+            perror("connection closed");
+            exit(0);
+
+        }
+        std::string subFile;
+        subFile = buffer2;
+        if (subFile.find("*") != std::string::npos) {
+            //we need to remove the * from the string
+            subFile = subFile.substr(0, subFile.find("*"));
+            resultContent += subFile;
+            break;
+        }
+        resultContent += subFile;
+
+    }
+    return resultContent;
+
+}
+
+void Client::chooseFive(std::string userInput) {
+    std::string resultContent = ReadResult(userInput);
+    std::cout << "enter path to write the file" << std::endl;
+    std::string pathInput;
+    getline(std::cin, pathInput);
+    std::thread t(&Client::writetoFile, this, resultContent, pathInput);
+    t.detach();
+
+}
 
 
 int main(int argc, char **argv) {
