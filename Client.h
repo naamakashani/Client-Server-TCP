@@ -30,6 +30,10 @@ public:
     std::string ReadResult(std::string userInput);
 
     std::string writetoFile(std::string fileContent, std::string filePath);
+
+    void handleCmd1(int sock);
+
+    void handleCmd1(std::string userInput);
 };
 
 

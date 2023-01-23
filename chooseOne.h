@@ -15,6 +15,8 @@ public:
     chooseOne(Data *data, std::string description, DefaultIO *dio);
 
     void execute();
+
+    std::string writeCSV(std::string fileContent, bool classified);
 };
 
 

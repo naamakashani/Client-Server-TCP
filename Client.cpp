@@ -165,24 +165,98 @@ void Client::sendToServer(int sock, std::string message) {
 }
 
 
+//void Client::chooseOne(std::string userInput) {
+//    Client::sendToServer(sock, userInput);
+//    receiveServer();
+//    std::cin >> userInput;
+//    sendToServer(sock, userInput);
+//    receiveServer();
+//    receiveServer();
+//    std::cin >> userInput;
+//    sendToServer(sock, userInput);
+//    receiveServer();
+//    std::cin.tie(0);
+//    std::ios::sync_with_stdio(0);
+//    return;
+//
+//
+//}
+void Client::handleCmd1(std::string userInput) {
+    Client::sendToServer(sock, userInput);
+    using namespace std;
+    cout << "Please upload your local train CSV file." << endl;
+    //get path for train file from the user:
+    string trainPath;
+    getline(cin, trainPath);
+    // read the file and convert it into string:
+    ifstream trainStream(trainPath);
+    string trainString = "";
+    if (trainStream.is_open()) {
+        // read the file and convert it into string:
+        stringstream trainBuffer;
+        trainBuffer << trainStream.rdbuf();
+        trainString = trainBuffer.str();
+    } else
+        cout << "Unable to open the file" << endl;
+    //add a sign for the server that the file is ended:
+    trainString += "*EOF";
+    sendToServer(sock, trainString);
+    std::cout << "done" << std::endl;
+    // part 2 of command 1:
+    receiveServer();
+    cout << "Please upload your local test CSV file." << endl;
+    string testPath;
+    getline(cin, testPath);
+    ifstream testStream(testPath);
+    stringstream testBuffer;
+    testBuffer << testStream.rdbuf();
+    string testString = testBuffer.str();
+    testString += "*EOF";
+    //Send the data to the server:
+    sendToServer(sock, testString);
+    receiveServer();
+
+}
 void Client::chooseOne(std::string userInput) {
     Client::sendToServer(sock, userInput);
     receiveServer();
     std::cin >> userInput;
-    sendToServer(sock, userInput);
+    std::ifstream trainStream(userInput);
+    std::string trainString = "";
+    if (trainStream.is_open()) {
+        // read the file and convert it into string:
+        std::stringstream trainBuffer;
+        trainBuffer << trainStream.rdbuf();
+        trainString = trainBuffer.str();
+    } else {
+        std::cout << "Error: can't open the file " << strerror(errno) << std::endl;
+    }
+    trainString += "*EOF";
+    sendToServer(sock, trainString);
     receiveServer();
     receiveServer();
     std::cin >> userInput;
-    sendToServer(sock, userInput);
+    std::ifstream trainStream2(userInput);
+    std::string trainString2 = "";
+    if (trainStream2.is_open()) {
+        // read the file and convert it into string:
+        std::stringstream trainBuffer2;
+        trainBuffer2 << trainStream2.rdbuf();
+        trainString2 = trainBuffer2.str();
+    } else {
+        std::cout << "Error: can't open the file " << strerror(errno) << std::endl;
+    }
+    trainString2 += "*EOF";
+    sendToServer(sock, trainString2);
     receiveServer();
     std::cin.tie(0);
     std::ios::sync_with_stdio(0);
+
     return;
-
-
 }
 
-void Client::chooseTwo(std::string userInput) {
+
+    void Client::chooseTwo(std::string userInput) {
     Client::sendToServer(sock, userInput);
     receiveServer();
     getline(std::cin, userInput);
