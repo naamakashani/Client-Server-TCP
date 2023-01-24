@@ -23,7 +23,6 @@ std::string SocketIO::read() {
     while(true) {
         int read_bytes = recv(client_sock, buffer, expected_data_len, 0);
         if (read_bytes == 0) {
-                std::cerr << "connection is closed" << std::endl;
                 pthread_exit(NULL);
         } else if (read_bytes < 0) {
             std::cerr << "Error reading data from client" << std::endl;

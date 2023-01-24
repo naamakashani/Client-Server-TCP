@@ -43,7 +43,7 @@ void chooseThree::execute() {
                 labels.push_back(str);
 
             }
-            m_dio->write("data classifying complete");
+            m_dio->write("classifying data complete");
             m_data->m_labels = labels;
 
 

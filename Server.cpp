@@ -48,7 +48,6 @@ int main(int argc, char **argv) {
     if (bind_result < 0) {
         std::perror("Error binding socket");
     }
-    std::cout << "create socket" << endl;
 
     for (long t = 0; t < 20; t++) {
 
@@ -64,7 +63,6 @@ int main(int argc, char **argv) {
         if (client_sock < 0) {
             perror("error accepting client");
         }
-        std::cout << "a client has connect to server" << endl;
         ///a client has connect to server
         pthread_create(&threads[t], NULL, threadFunction, (void *)t);
         /* thread th1([]() {

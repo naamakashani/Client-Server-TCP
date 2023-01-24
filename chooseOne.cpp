@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <string.h>
 
 chooseOne:: chooseOne(Data* data, std::string description, DefaultIO* dio) : Command(data, description , dio){
 
@@ -15,6 +15,9 @@ void chooseOne::execute() {
     m_dio->write("Please upload your local train CSV file.");
     std::string fileData;
     fileData = m_dio->read();
+    if(fileData == "invalid input") {
+        return;
+    }
     // need to generate a filename per thread to save the CSV files
     // names should be such that they MUST BE UNIQUE for every thread
     // m_data object will be unique for every connection so using its
@@ -31,6 +34,9 @@ void chooseOne::execute() {
     std::string testData;
     sleep(1);
     testData = m_dio->read();
+    if(testData == "invalid input") {
+        return;
+    }
     m_data->m_fileTest=generatedFileName + "_test.csv";
 
     writeToFile(testData, m_data->m_fileTest);

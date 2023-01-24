@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "chooseTwo.h"
+#include <unistd.h>
 
 chooseTwo::chooseTwo(Data *data, std::string description, DefaultIO *dio) : Command(data, description, dio) {
 
@@ -37,6 +38,7 @@ void chooseTwo::execute() {
                              m_data->m_metric;
     m_dio->write(sendString);
     std::string answer = m_dio->read();
+    sleep(1);
     if (!answer.empty() && !(answer == "enter")) {
         //check that the answer has exactly 2 words
 
@@ -53,7 +55,7 @@ void chooseTwo::execute() {
                 int num = std::stoi(k);
                 m_data->m_k = num;
                 m_data->m_metric = dis;
-                m_dio->write("valid k and matric");
+                m_dio->write("null");
             } else {
                 if (!validMetric(dis)) {
                     m_dio->write("invalid value for metric");
@@ -63,13 +65,9 @@ void chooseTwo::execute() {
                 }
 
             }
-
-
         } else {
             m_dio->write("invalid input");
         }
     }
-    m_dio->write("same parameters");
-
-
+    m_dio->write("null");
 }

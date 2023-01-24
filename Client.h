@@ -29,7 +29,7 @@ public:
 
     std::string ReadResult(std::string userInput);
 
-    std::string writetoFile(std::string fileContent, std::string filePath);
+    void writetoFile(std::string fileContent, std::string filePath);
 };
 
 

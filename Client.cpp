@@ -93,9 +93,7 @@ std::string filePathGiven(std::string filePath) {
     // open the CSV file
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cout << filePath << std::endl;
-        std::cout << "not open" << std::endl;
-        std::cout << "Error: " << strerror(errno) << std::endl;
+        std::cout << "invalid input" << std::endl;
     }
     std::string fileContent((std::istreambuf_iterator<char>(file)),
                             std::istreambuf_iterator<char>());
@@ -149,8 +147,10 @@ void receiveServer() {
         exit(0);
 
     } else {
-        std::cout << buffer << std::endl;
-        std::cout.flush();
+        if(strcmp(buffer,"null") != 0) {
+            std::cout << buffer << std::endl;
+            std::cout.flush();
+        }
     }
 }
 
@@ -173,36 +173,42 @@ void Client::chooseOne(std::string userInput) {
     // read csv file name from user
     bool flag = false;
     std::string csvname;
-    while(! flag) {
-        std::cout << "Enter train csv filepath: ";
-        std::cout.flush();
-        readInput(csvname, flag);
-    }
-    std::string data = filePathGiven(csvname);
-    sendToServer(sock, data);
-    receiveServer();
 
-    // read csv file name from user for test
-    flag = false;
-    while(! flag) {
-        std::cout << "Enter test csv filepath: ";
+    std::cout.flush();
+    readInput(csvname, flag);
+    if (!flag) {
+        std::cout << "invalid input" << std::endl;
+        sendToServer(sock, "invalid input");
+    } else {
+        std::string data = filePathGiven(csvname);
+        sendToServer(sock, data);
+        receiveServer();
+
+        // read csv file name from user for test
+        flag = false;
+
         std::cout.flush();
         readInput(csvname, flag);
+        if (!flag) {
+            std::cout << "invalid input" << std::endl;
+            sendToServer(sock, "invalid input");
+        } else {
+            data = filePathGiven(csvname);
+            sendToServer(sock, data);
+            receiveServer();
+        }
     }
-    data = filePathGiven(csvname);
-    sendToServer(sock, data);
-    receiveServer();
     std::cin.tie(0);
     std::ios::sync_with_stdio(0);
     return;
 
 
 }
+
 void Client::chooseTwo(std::string userInput) {
     Client::sendToServer(sock, userInput);
     receiveServer();
     getline(std::cin, userInput);
-    std::cout << userInput << std::endl;
     if (userInput.empty()) {
         userInput = "enter";
     }
@@ -252,7 +258,7 @@ void Client::talkWithServer() {
     }
 }
 
-std::string Client::writetoFile(std::string fileContent, std::string filePath) {
+void Client::writetoFile(std::string fileContent, std::string filePath) {
     std::fstream file;
     file.open(filePath, std::ios::in);
     if (file.good()) {
@@ -276,7 +282,7 @@ std::string Client::writetoFile(std::string fileContent, std::string filePath) {
 
 void Client::chooseFour(std::string userInput) {
     std::cout << ReadResult(userInput);
-    std::cout << std:: endl;
+    std::cout << std::endl;
 
 }
 
@@ -309,7 +315,6 @@ std::string Client::ReadResult(std::string userInput) {
 
 void Client::chooseFive(std::string userInput) {
     std::string resultContent = ReadResult(userInput);
-    std::cout << "enter path to write the file" << std::endl;
     std::string pathInput;
     getline(std::cin, pathInput);
     std::thread t(&Client::writetoFile, this, resultContent, pathInput);
@@ -338,7 +343,6 @@ int main(int argc, char **argv) {
         perror("error connecting to server");
     }
     // client connect to server
-    std::cout << "client connect to server" << std::endl;
     client.talkWithServer();
     close(sock);
 }
